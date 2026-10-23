@@ -1,0 +1,11 @@
+/build/
+.catkin_workspace
+.theia/
+.vscode
+/devel/
+/install/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+gen-img-base64.ipynb
+.env
