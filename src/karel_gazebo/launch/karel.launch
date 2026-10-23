@@ -1,0 +1,23 @@
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<launch>
+  <arg name="world_name" default="$(optenv KAREL_WORLD circuit_single_obstacle)"/>
+  <arg name="gui" default="true"/>
+  <arg name="evaluation" default="true"/>
+  <arg name="obstacle_seed" default="$(optenv KAREL_OBSTACLE_SEED 1)"/>
+
+  <include file="$(find karel_gazebo)/launch/karel_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <include file="$(find karel_evaluation)/launch/karel_evaluation.launch" if="$(arg evaluation)"/>
+
+  <node if="$(eval arg('world_name') == 'circuit_straight' or arg('world_name').endswith('/circuit_straight.world'))"
+        name="spawn_circuit_obstacles" pkg="karel_gazebo"
+        type="spawn_circuit_obstacles.py" output="screen"
+        args="--seed $(arg obstacle_seed) --count 3 --wait-for-model karel --timeout 30"/>
+</launch>

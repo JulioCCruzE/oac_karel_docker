@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<package format="2">
+  <name>karel_bringup</name>
+  <version>1.0.0</version>
+  <description>Basic ROS bring-up for Karel.</description>
+  <maintainer email="julioccruze@sociales.unam.mx">Julio Cruz</maintainer>
+  <license>GPL-3.0-only</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>emulador68hc11</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>karel_gazebo</exec_depend>
+  <exec_depend>karel_gui</exec_depend>
+  <exec_depend>karel_teleop</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>xacro</exec_depend>
+</package>

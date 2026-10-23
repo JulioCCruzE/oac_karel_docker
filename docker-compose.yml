@@ -1,0 +1,117 @@
+# Copyright (c) 2020 TOYOTA MOTOR CORPORATION
+# All rights reserved.
+
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+
+#  * Redistributions of source code must retain the above copyright notice,
+#  this list of conditions and the following disclaimer.
+#  * Redistributions in binary form must reproduce the above copyright
+#  notice, this list of conditions and the following disclaimer in the
+#  documentation and/or other materials provided with the distribution.
+#  * Neither the name of Toyota Motor Corporation nor the names of its
+#  contributors may be used to endorse or promote products derived from
+#  this software without specific prior written permission.
+
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  xserver:
+    image: devrt/xserver@sha256:d0960e1f0e8c0cd1b1c046924c37f900b8563d94dca3edfc974d106b4ba0fd2e
+    shm_size: 256m
+    ports:
+      - "127.0.0.1:3000:80"
+    volumes:
+      - x11:/tmp/.X11-unix
+    logging: *default-logging
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD-SHELL", "test -e /tmp/.X11-unix/X0"]
+      interval: "1s"
+      timeout: "2s"
+      retries: 20
+  simulator:
+    build:
+      context: .
+      dockerfile: dockerfile/Dockerfile
+    image: oac_karel_docker:latest
+    init: true
+    shm_size: 512m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      DISPLAY: ":0"
+      KAREL_WORLD: ${KAREL_WORLD:-circuit_single_obstacle}
+      KAREL_OBSTACLE_SEED: ${KAREL_OBSTACLE_SEED:-1}
+      KAREL_GUI: ${KAREL_GUI:-true}
+      ALSOFT_DRIVERS: "null"
+      GAZEBO_MODEL_DATABASE_URI: ""
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      QT_X11_NO_MITSHM: "1"
+    volumes:
+      - ./src:/repo/src:ro
+      - x11:/tmp/.X11-unix
+    logging: *default-logging
+    pids_limit: 1024
+    depends_on:
+      xserver:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'test -f /catkin_ws/devel/setup.bash && source /catkin_ws/devel/setup.bash && supervisorctl -c /etc/supervisor/supervisord.conf status simulator | grep -q RUNNING && pgrep -x gzserver >/dev/null && rosservice call /gazebo/get_world_properties >/dev/null'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+  workspace:
+    build:
+      context: .
+      dockerfile: dockerfile/Dockerfile.workspace
+    image: oac_karel_workspace:latest
+    platform: linux/amd64
+    init: true
+    shm_size: 512m
+    ports:
+      - "127.0.0.1:3001:3000"
+      - "127.0.0.1:3002:8888"
+    volumes:
+      - .:/workspace
+      - x11:/tmp/.X11-unix
+    environment:
+      DISPLAY: ":0"
+      ROS_MASTER_URI: http://simulator:11311/
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-}
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      QT_X11_NO_MITSHM: "1"
+    logging: *default-logging
+    pids_limit: 1024
+    depends_on:
+      xserver:
+        condition: service_healthy
+      simulator:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8888/api >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+volumes:
+  x11:

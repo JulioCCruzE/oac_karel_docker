@@ -1,0 +1,20 @@
+# Karel ROS
+# Copyright (C) 2026 Julio Cruz
+# SPDX-License-Identifier: GPL-3.0-only
+
+robot_model: karel
+obstacle_prefix: circuit_obstacle_
+goal_x: 0.85
+goal_y: 0.0
+goal_line_half_width: 0.25
+goal_line_tolerance: 0.10
+pass_margin: 0.08
+evade_close_radius: 0.20
+collision_release_seconds: 0.40
+score_goal: 4.0
+score_evade_per_obstacle: 2.0
+score_evade_close_bonus: 1.0
+penalty_collision: 3.0
+require_obstacles_for_goal: true
+time_limit_enabled: true
+time_limit_minutes: 10

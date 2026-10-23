@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<package format="2">
+  <name>karel_evaluation</name>
+  <version>1.0.0</version>
+  <description>Obstacle avoidance and goal scoring for Karel circuits.</description>
+  <maintainer email="julioccruze@sociales.unam.mx">Julio Cruz</maintainer>
+  <license>GPL-3.0-only</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>gazebo_dev</build_depend>
+  <depend>gazebo_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <exec_depend>gazebo_ros</exec_depend>
+</package>

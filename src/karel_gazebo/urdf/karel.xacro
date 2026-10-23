@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="karel">
+  <xacro:property name="body_length" value="0.12"/>
+  <xacro:property name="body_width" value="0.10"/>
+  <xacro:property name="body_height" value="0.04"/>
+  <xacro:property name="wheel_radius" value="0.03"/>
+  <xacro:property name="wheel_width" value="0.02"/>
+  <xacro:property name="wheel_separation" value="0.12"/>
+
+  <material name="karel_blue">
+    <color rgba="0.05 0.35 0.75 1"/>
+  </material>
+  <material name="wheel_black">
+    <color rgba="0.03 0.03 0.03 1"/>
+  </material>
+  <material name="sensor_gray">
+    <color rgba="0.65 0.68 0.72 1"/>
+  </material>
+
+  <link name="base_footprint"/>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+  </joint>
+
+  <link name="base_link">
+    <visual>
+      <geometry><box size="${body_length} ${body_width} ${body_height}"/></geometry>
+      <material name="karel_blue"/>
+    </visual>
+    <collision>
+      <geometry><box size="${body_length} ${body_width} ${body_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.35"/>
+      <inertia ixx="0.00033833" ixy="0" ixz="0" iyy="0.00046667" iyz="0" izz="0.00071167"/>
+    </inertial>
+  </link>
+
+  <xacro:macro name="drive_wheel" params="side y">
+    <link name="wheel_${side}">
+      <visual>
+        <origin rpy="1.57079632679 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+        <material name="wheel_black"/>
+      </visual>
+      <collision>
+        <origin rpy="1.57079632679 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      </collision>
+      <inertial>
+        <mass value="0.06"/>
+        <inertia ixx="0.0000155" ixy="0" ixz="0" iyy="0.000027" iyz="0" izz="0.0000155"/>
+      </inertial>
+    </link>
+    <joint name="wheel_${side}_connect" type="continuous">
+      <parent link="base_link"/>
+      <child link="wheel_${side}"/>
+      <origin xyz="0.012 ${y} -0.02" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.02" friction="0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:drive_wheel side="left" y="${wheel_separation/2}"/>
+  <xacro:drive_wheel side="right" y="-${wheel_separation/2}"/>
+
+  <link name="caster_yaw_link">
+    <visual>
+      <geometry><cylinder radius="0.008" length="0.01"/></geometry>
+      <material name="wheel_black"/>
+    </visual>
+    <inertial>
+      <mass value="0.005"/>
+      <inertia ixx="0.0000001217" ixy="0" ixz="0" iyy="0.0000001217" iyz="0" izz="0.00000016"/>
+    </inertial>
+  </link>
+  <joint name="caster_yaw_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="caster_yaw_link"/>
+    <origin xyz="-0.035 0 -0.035" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.02" friction="0"/>
+  </joint>
+
+  <link name="caster_wheel_link">
+    <visual>
+      <origin rpy="1.57079632679 0 0"/>
+      <geometry><cylinder radius="0.015" length="0.012"/></geometry>
+      <material name="wheel_black"/>
+    </visual>
+    <collision>
+      <origin rpy="1.57079632679 0 0"/>
+      <geometry><cylinder radius="0.015" length="0.012"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.02"/>
+      <inertia ixx="0.000001365" ixy="0" ixz="0" iyy="0.00000225" iyz="0" izz="0.000001365"/>
+    </inertial>
+  </link>
+  <joint name="caster_wheel_joint" type="continuous">
+    <parent link="caster_yaw_link"/>
+    <child link="caster_wheel_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.005" friction="0"/>
+  </joint>
+
+  <xacro:macro name="ultrasonic_sensor" params="name x y yaw topic">
+    <link name="${name}_link">
+      <visual>
+        <geometry><box size="0.01 0.03 0.015"/></geometry>
+        <material name="sensor_gray"/>
+      </visual>
+      <collision><geometry><box size="0.01 0.03 0.015"/></geometry></collision>
+      <inertial>
+        <mass value="0.01"/>
+        <inertia ixx="0.00000094" ixy="0" ixz="0" iyy="0.00000027" iyz="0" izz="0.00000083"/>
+      </inertial>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}_link"/>
+      <origin xyz="${x} ${y} 0.015" rpy="0 0 ${yaw}"/>
+    </joint>
+    <gazebo reference="${name}_link">
+      <sensor type="ray" name="karel_${name}">
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>20</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>5</samples><resolution>1</resolution>
+              <min_angle>-0.25</min_angle><max_angle>0.25</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>3</samples><resolution>1</resolution>
+              <min_angle>-0.10</min_angle><max_angle>0.10</max_angle>
+            </vertical>
+          </scan>
+          <range><min>0.02</min><max>4.0</max><resolution>0.005</resolution></range>
+          <noise><type>gaussian</type><mean>0.0</mean><stddev>0.005</stddev></noise>
+        </ray>
+        <plugin name="karel_${name}_controller" filename="libgazebo_ros_range.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>20</updateRate>
+          <topicName>${topic}</topicName>
+          <frameName>${name}_link</frameName>
+          <fov>0.5</fov>
+          <radiation>ultrasound</radiation>
+          <gaussianNoise>0.005</gaussianNoise>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:ultrasonic_sensor name="ultrasonic" x="0.065" y="0" yaw="0"
+                           topic="/hardware/ultrasonic"/>
+  <xacro:ultrasonic_sensor name="ultrasonic_back" x="-0.065" y="0" yaw="3.14159265359"
+                           topic="/hardware/ultrasonic/back"/>
+  <xacro:ultrasonic_sensor name="ultrasonic_left" x="0" y="0.065" yaw="1.57079632679"
+                           topic="/hardware/ultrasonic/left"/>
+  <xacro:ultrasonic_sensor name="ultrasonic_right" x="0" y="-0.065" yaw="-1.57079632679"
+                           topic="/hardware/ultrasonic/right"/>
+
+  <gazebo reference="wheel_left">
+    <material>Gazebo/Black</material>
+    <mu1>0.0</mu1><mu2>0.0</mu2>
+  </gazebo>
+  <gazebo reference="wheel_right">
+    <material>Gazebo/Black</material>
+    <mu1>0.0</mu1><mu2>0.0</mu2>
+  </gazebo>
+  <gazebo reference="caster_wheel_link">
+    <material>Gazebo/Black</material>
+    <mu1>0.0</mu1><mu2>0.0</mu2>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="karel_planar_move" filename="libgazebo_ros_planar_move.so">
+      <commandTopic>/hardware/mobile_base/cmd_vel</commandTopic>
+      <odometryTopic>/karel/odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+      <odometryRate>50</odometryRate>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+      <robotNamespace>/</robotNamespace>
+      <jointName>wheel_left_connect,wheel_right_connect,caster_yaw_joint,caster_wheel_joint</jointName>
+      <updateRate>50</updateRate>
+      <alwaysOn>true</alwaysOn>
+    </plugin>
+  </gazebo>
+
+</robot>

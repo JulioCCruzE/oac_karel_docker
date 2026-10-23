@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+  Emulador Motorola 68HC11
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<package format="2">
+  <name>emulador68hc11</name>
+  <version>1.0.0</version>
+  <description>Qt interface for the 68HC11 emulator.</description>
+  <maintainer email="julioccruze@sociales.unam.mx">Julio Cruz</maintainer>
+  <license>GPL-3.0-only</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>cpu68hc11</depend>
+  <depend>geometry_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+
+  <export/>
+</package>

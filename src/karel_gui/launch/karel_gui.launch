@@ -1,0 +1,8 @@
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<launch>
+  <node name="karel_gui" pkg="karel_gui" type="karel_gui_node" output="screen"/>
+</launch>

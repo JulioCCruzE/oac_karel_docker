@@ -1,0 +1,17 @@
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<launch>
+  <arg name="gui" default="true"/>
+  <arg name="emulator" default="true"/>
+
+  <param name="robot_description"
+         command="$(find xacro)/xacro '$(find karel_gazebo)/urdf/karel.xacro'"/>
+
+  <node if="$(arg gui)" name="karel_gui" pkg="karel_gui" type="karel_gui_node"
+        output="screen"/>
+  <node if="$(arg emulator)" name="emulador68hc11" pkg="emulador68hc11"
+        type="emulador68hc11" output="screen"/>
+</launch>

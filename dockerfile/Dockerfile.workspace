@@ -1,0 +1,33 @@
+FROM devrt/ros-devcontainer-vscode:melodic-desktop@sha256:dafe461a675394ba903e05e892e9924dc8492610d038c0df11a010c7088c0905
+
+USER root
+ENV DEBIAN_FRONTEND=noninteractive
+
+ARG ROS_DISTRO_ROS_KEY_COMMIT=acdf4f981a53e82609fbb9fe91bbe4275bd0f09d
+ARG ROS_DISTRO_ROS_KEY_SHA256=4a91c49af0d6f0016108b93698782b596c27ccd836937e18e0e36c3347dc602f
+
+RUN curl -fsSL "https://raw.githubusercontent.com/ros/rosdistro/${ROS_DISTRO_ROS_KEY_COMMIT}/ros.key" \
+      -o /usr/share/keyrings/ros-archive-keyring.gpg \
+    && echo "${ROS_DISTRO_ROS_KEY_SHA256}  /usr/share/keyrings/ros-archive-keyring.gpg" | sha256sum -c - \
+    && printf '%s\n' \
+      'deb [signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros/ubuntu bionic main' \
+      > /etc/apt/sources.list.d/ros1-latest.list \
+    && apt-get update && apt-get install --no-install-recommends -y \
+    libgl1-mesa-dev \
+    libglu1-mesa-dev \
+    libgazebo9-dev \
+    libqt5opengl5-dev \
+    mesa-utils \
+    qtbase5-dev \
+    qttools5-dev \
+    ros-melodic-gazebo-msgs \
+    ros-melodic-rviz \
+    xvfb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*.deb /var/cache/apt/*.bin
+
+COPY --chmod=755 dockerfile/jupyter-start.sh /usr/local/bin/jupyter-start.sh
+COPY dockerfile/supervisord-workspace.conf /etc/supervisor/supervisord.conf
+COPY dockerfile/supervisor-jupyter.conf /etc/supervisor/conf.d/jupyter.conf
+
+USER developer

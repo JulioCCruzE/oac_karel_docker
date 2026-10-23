@@ -1,0 +1,35 @@
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<launch>
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="world_name" default="$(optenv KAREL_WORLD circuit_single_obstacle)"/>
+  <arg name="world" default="$(eval arg('world_name') if arg('world_name').startswith('/') else find('karel_gazebo') + '/worlds/' + arg('world_name') + ('' if arg('world_name').endswith('.world') else '.world'))"/>
+  <arg name="x" default="-0.85"/>
+  <arg name="y" default="0.0"/>
+  <arg name="yaw" default="0.0"/>
+
+  <param name="/use_sim_time" value="true"/>
+  <param name="/karel/initial_pose/x" value="$(arg x)"/>
+  <param name="/karel/initial_pose/y" value="$(arg y)"/>
+  <param name="/karel/initial_pose/yaw" value="$(arg yaw)"/>
+  <param name="robot_description"
+         command="$(find xacro)/xacro '$(find karel_gazebo)/urdf/karel.xacro'"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="false"/>
+    <arg name="server_required" value="true"/>
+  </include>
+
+  <node if="$(arg gui)" name="gazebo_gui" pkg="karel_gazebo"
+        type="start_gazebo_gui.sh" output="screen" required="false"/>
+
+  <node name="spawn_karel" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-param robot_description -urdf -model karel -x $(arg x) -y $(arg y) -z 0.0 -Y $(arg yaw)"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
+</launch>

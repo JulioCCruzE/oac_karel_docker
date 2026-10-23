@@ -1,0 +1,90 @@
+# Karel ROS
+# Copyright (C) 2026 Julio Cruz
+# SPDX-License-Identifier: GPL-3.0-only
+
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 0.25
+      Class: rviz/Grid
+      Color: 120; 120; 120
+      Enabled: true
+      Name: Grid
+      Plane: XY
+      Reference Frame: <Fixed Frame>
+    - Class: rviz/RobotModel
+      Enabled: true
+      Name: Karel
+      Robot Description: robot_description
+      Visual Enabled: true
+      Collision Enabled: false
+    - Class: rviz/TF
+      Enabled: true
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+    - Class: rviz/Odometry
+      Enabled: true
+      Name: Odometry
+      Topic: /karel/odom
+      Shape: Arrow
+    - Class: rviz/Range
+      Enabled: true
+      Name: Ultrasonic Front
+      Topic: /hardware/ultrasonic
+      Color: 255; 170; 0
+      Buffer Length: 1
+    - Class: rviz/Range
+      Enabled: true
+      Name: Ultrasonic Back
+      Topic: /hardware/ultrasonic/back
+      Color: 80; 160; 255
+      Buffer Length: 1
+    - Class: rviz/Range
+      Enabled: true
+      Name: Ultrasonic Left
+      Topic: /hardware/ultrasonic/left
+      Color: 80; 220; 120
+      Buffer Length: 1
+    - Class: rviz/Range
+      Enabled: true
+      Name: Ultrasonic Right
+      Topic: /hardware/ultrasonic/right
+      Color: 220; 100; 220
+      Buffer Length: 1
+  Enabled: true
+  Global Options:
+    Background Color: 30; 30; 30
+    Fixed Frame: odom
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/MoveCamera
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 0.8
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.785398
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 0.785398
+    Saved: ~
+Window Geometry:
+  Height: 720
+  Width: 1200

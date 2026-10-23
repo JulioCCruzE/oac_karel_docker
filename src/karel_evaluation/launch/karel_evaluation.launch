@@ -1,0 +1,11 @@
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<launch>
+  <rosparam command="load" file="$(find karel_evaluation)/config/scoring.yaml"
+            ns="karel_score"/>
+  <node name="karel_score" pkg="karel_evaluation" type="karel_score_counter"
+        output="screen"/>
+</launch>

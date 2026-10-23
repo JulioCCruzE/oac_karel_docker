@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+<!--
+  Karel ROS
+  Copyright (C) 2026 Julio Cruz
+  SPDX-License-Identifier: GPL-3.0-only
+-->
+<sdf version="1.5">
+  <world name="default">
+    <gravity>0 0 -9.8</gravity>
+    <physics type="ode">
+      <real_time_update_rate>333.0</real_time_update_rate>
+      <max_step_size>0.003</max_step_size>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>100</iters>
+        </solver>
+        <constraints>
+          <cfm>0.0001</cfm>
+        </constraints>
+      </ode>
+    </physics>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <model name="circuit_wall_left">
+      <static>true</static>
+      <pose>0 0.28 0.05 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>2.0 0.06 0.10</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>2.0 0.06 0.10</size></box></geometry>
+          <material><ambient>0.15 0.25 0.8 1</ambient><diffuse>0.15 0.25 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="circuit_wall_right">
+      <static>true</static>
+      <pose>0 -0.28 0.05 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>2.0 0.06 0.10</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>2.0 0.06 0.10</size></box></geometry>
+          <material><ambient>0.15 0.25 0.8 1</ambient><diffuse>0.15 0.25 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="circuit_start_marker">
+      <static>true</static>
+      <pose>-0.85 0 0.002 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><box><size>0.03 0.50 0.004</size></box></geometry>
+          <material><ambient>0.1 0.8 0.2 1</ambient><diffuse>0.1 0.8 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="circuit_goal_marker">
+      <static>true</static>
+      <pose>0.85 0 0.002 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><box><size>0.03 0.50 0.004</size></box></geometry>
+          <material><ambient>0.9 0.15 0.15 1</ambient><diffuse>0.9 0.15 0.15 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="circuit_obstacle_0">
+      <static>true</static>
+      <pose>0 0.08 0.05 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.08 0.10 0.10</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.08 0.10 0.10</size></box></geometry>
+          <material><ambient>0.95 0.55 0.05 1</ambient><diffuse>0.95 0.55 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>
