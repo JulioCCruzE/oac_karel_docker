@@ -77,12 +77,12 @@ void Index16::functn(const DataBus16 &bus, uint8_t ctrl) {
     break;
   case 3:
     L = bus.isDrivenL() ? bus.readL() : 127;
-    // C &= 0xFF00;
+    C &= 0xFF00;
     C |= uint16_t(L);
     break;
   case 4:
     H = bus.isDrivenH() ? bus.readH() : 127;
-    // C &= 0xFF00;
+    C &= 0x00FF;
     C |= uint16_t(H) << 8;
     break;
   case 5:
